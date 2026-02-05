@@ -1,0 +1,54 @@
+<div class="auth-container">
+    <div class="auth-header">
+        <h2>{{ isLoginMode ? 'Welcome Back' : 'Create Account' }}</h2>
+        <p>{{ isLoginMode ? 'Enter your credentials to access your account' : 'Sign up to get started with FacilityUI'
+            }}</p>
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+
+        <div *ngIf="!isLoginMode" class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" class="form-control" formControlName="fullName" placeholder="John Doe"
+                [class.invalid]="fullName?.invalid && fullName?.touched" />
+            <span *ngIf="fullName?.invalid && fullName?.touched" class="error-message">
+                Full name is required
+            </span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-control" formControlName="email" placeholder="name@example.com"
+                [class.invalid]="email?.invalid && email?.touched" />
+            <span *ngIf="email?.hasError('required') && email?.touched" class="error-message">
+                Email is required
+            </span>
+            <span *ngIf="email?.hasError('email') && email?.touched" class="error-message">
+                Please enter a valid email address
+            </span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" class="form-control" formControlName="password" placeholder="••••••••"
+                [class.invalid]="password?.invalid && password?.touched" />
+            <span *ngIf="password?.hasError('required') && password?.touched" class="error-message">
+                Password is required
+            </span>
+            <span *ngIf="password?.hasError('minlength') && password?.touched" class="error-message">
+                Password must be at least 6 characters
+            </span>
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="authForm.invalid || isLoading">
+            {{ isLoginMode ? 'Sign In' : 'Sign Up' }}
+            <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+    </form>
+
+    <div class="auth-footer">
+        <span *ngIf="isLoginMode">Don't have an account?</span>
+        <span *ngIf="!isLoginMode">Already have an account?</span>
+        <a (click)="toggleMode()">{{ isLoginMode ? 'Sign Up' : 'Sign In' }}</a>
+    </div>
+</div>
