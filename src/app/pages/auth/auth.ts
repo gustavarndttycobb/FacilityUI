@@ -69,6 +69,7 @@ export class Auth {
       this.authService.signin({ email, password }).subscribe({
         next: (response) => {
           this.isLoading = false;
+          this.authService.storeToken(response.token);
           this.router.navigate(['/']);
           this.toastService.show('Welcome back!', 'success');
         },
@@ -91,6 +92,7 @@ export class Auth {
         next: (response) => {
           this.isLoading = false;
           this.isLoginMode = true;
+          this.authService.storeToken(response.token);
           this.router.navigate(['/']);
           this.toastService.show('Account created! Please log in.', 'success');
         },
