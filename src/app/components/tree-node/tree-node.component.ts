@@ -4,10 +4,10 @@ import { Facility } from '../../services/facility.service';
 import { Equipment } from '../../services/equipment.service';
 
 @Component({
-    selector: 'app-tree-node',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-tree-node',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="tree-node">
       <div class="node-content">
         <div class="node-info" (click)="toggleExpand()">
@@ -75,10 +75,13 @@ import { Equipment } from '../../services/equipment.service';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .tree-node {
       margin-left: 20px;
-      border-left: 1px solid rgba(255,255,255,0.1);
+      /* removed border-left here to use more specific connecting lines if needed, 
+         but keeping simpler border for now with better visibility */
+      border-left: 1px solid rgba(255,255,255,0.2); 
+      padding-left: 10px;
     }
     .node-content {
       display: flex;
@@ -89,11 +92,17 @@ import { Equipment } from '../../services/equipment.service';
       background: rgba(255,255,255,0.05);
       margin-bottom: 5px;
       transition: all 0.2s;
+      border: 1px solid transparent;
     }
     .node-content:hover {
       background: rgba(255,255,255,0.1);
-      transform: translateX(5px);
+      border-color: rgba(255,255,255,0.1);
     }
+    /* Lines connecting nodes */
+    .node-children {
+      position: relative;
+    }
+    
     .node-info {
       display: flex;
       align-items: center;
@@ -106,6 +115,9 @@ import { Equipment } from '../../services/equipment.service';
       transition: transform 0.2s;
       width: 15px;
       color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .expand-icon.expanded {
       transform: rotate(90deg);
@@ -120,6 +132,7 @@ import { Equipment } from '../../services/equipment.service';
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
     .facility-icon {
       background: rgba(59, 130, 246, 0.2);
@@ -132,12 +145,14 @@ import { Equipment } from '../../services/equipment.service';
     .node-name {
       font-weight: 500;
       color: #e2e8f0;
+      margin-right: 10px;
     }
     .status-badge {
       font-size: 0.75rem;
       padding: 2px 8px;
       border-radius: 12px;
       font-weight: 500;
+      white-space: nowrap;
     }
     .status-badge.working {
       background: rgba(34, 197, 94, 0.2);
@@ -150,16 +165,13 @@ import { Equipment } from '../../services/equipment.service';
     .node-actions {
       display: flex;
       gap: 5px;
-      opacity: 0;
+      /* Opacity removed to keep actions visible */
       transition: opacity 0.2s;
     }
-    .node-content:hover .node-actions {
-      opacity: 1;
-    }
     .btn-icon {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 0.75rem;
@@ -167,16 +179,46 @@ import { Equipment } from '../../services/equipment.service';
       transition: all 0.2s;
     }
     .btn-icon:hover {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.2);
       color: white;
+      border-color: rgba(255,255,255,0.3);
+    }
+    
+    /* Specific Button Colors */
+    .btn-icon[title^="Add"] {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+    .btn-icon[title^="Add"]:hover {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #4ade80;
+      color: #bbf7d0;
+    }
+
+    .btn-icon[title="Edit"] {
+      border-color: rgba(234, 179, 8, 0.4);
+      color: #fde047;
+    }
+    .btn-icon[title="Edit"]:hover {
+      background: rgba(234, 179, 8, 0.2);
+      border-color: #facc15;
+      color: #fef08a;
+    }
+
+    .btn-icon.danger {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
     }
     .btn-icon.danger:hover {
       background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #f87171;
+      border-color: #f87171;
+      color: #fecaca;
     }
+
     .equipment-node {
       margin-left: 20px;
+      border-left: 1px solid rgba(168, 85, 247, 0.3); /* Purple line for equipment */
+      padding-left: 10px;
     }
     .equipment-content {
       background: rgba(0,0,0,0.2);
@@ -184,40 +226,40 @@ import { Equipment } from '../../services/equipment.service';
   `]
 })
 export class TreeNodeComponent {
-    @Input() facility!: Facility;
-    @Output() addFacility = new EventEmitter<Facility>(); // Emits parent facility
-    @Output() addEquipment = new EventEmitter<Facility>(); // Emits parent facility
-    @Output() editFacility = new EventEmitter<Facility>();
-    @Output() deleteFacility = new EventEmitter<number>();
-    @Output() editEquipment = new EventEmitter<Equipment>();
-    @Output() deleteEquipment = new EventEmitter<number>();
+  @Input() facility!: Facility;
+  @Output() addFacility = new EventEmitter<Facility>(); // Emits parent facility
+  @Output() addEquipment = new EventEmitter<Facility>(); // Emits parent facility
+  @Output() editFacility = new EventEmitter<Facility>();
+  @Output() deleteFacility = new EventEmitter<number>();
+  @Output() editEquipment = new EventEmitter<Equipment>();
+  @Output() deleteEquipment = new EventEmitter<number>();
 
-    isExpanded = false;
+  isExpanded = false;
 
-    get hasChildren(): boolean {
-        return (this.facility.children && this.facility.children.length > 0) ||
-            (this.facility.equipments && this.facility.equipments.length > 0);
+  get hasChildren(): boolean {
+    return (this.facility.children && this.facility.children.length > 0) ||
+      (this.facility.equipments && this.facility.equipments.length > 0);
+  }
+
+  toggleExpand() {
+    if (this.hasChildren) {
+      this.isExpanded = !this.isExpanded;
     }
+  }
 
-    toggleExpand() {
-        if (this.hasChildren) {
-            this.isExpanded = !this.isExpanded;
-        }
-    }
+  onAddChild() {
+    this.addFacility.emit(this.facility);
+  }
 
-    onAddChild() {
-        this.addFacility.emit(this.facility);
-    }
+  onAddEquipment() {
+    this.addEquipment.emit(this.facility);
+  }
 
-    onAddEquipment() {
-        this.addEquipment.emit(this.facility);
-    }
+  onEdit() {
+    this.editFacility.emit(this.facility);
+  }
 
-    onEdit() {
-        this.editFacility.emit(this.facility);
-    }
-
-    onDelete() {
-        this.deleteFacility.emit(this.facility.id);
-    }
+  onDelete() {
+    this.deleteFacility.emit(this.facility.id);
+  }
 }
