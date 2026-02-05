@@ -1,1 +1,31 @@
-<p>home works!</p>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Facility Management</h1>
+        <button class="btn-primary" (click)="onAddFacility(null)">+ New Root Facility</button>
+    </div>
+
+    <div class="dashboard-content">
+        <div *ngIf="isLoading()" class="loading-state">
+            <div class="spinner"></div> Loading...
+        </div>
+
+        <div *ngIf="!isLoading() && facilities().length === 0" class="empty-state">
+            <p>No facilities found. Create one to get started.</p>
+        </div>
+
+        <div class="tree-view" *ngIf="!isLoading() && facilities().length > 0">
+            <app-tree-node *ngFor="let facility of facilities()" [facility]="facility"
+                (addFacility)="onAddFacility($event)" (addEquipment)="onAddEquipment($event)"
+                (editFacility)="onEditFacility($event)" (deleteFacility)="onDeleteFacility($event)"
+                (editEquipment)="onEditEquipment($event)" (deleteEquipment)="onDeleteEquipment($event)"></app-tree-node>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <app-facility-modal *ngIf="isFacilityModalOpen" [facility]="selectedFacility" [parentId]="selectedParentId"
+        (save)="onSaveFacility($event)" (cancel)="closeModals()"></app-facility-modal>
+
+    <app-equipment-modal *ngIf="isEquipmentModalOpen" [equipment]="selectedEquipment"
+        [facilityId]="targetFacilityIdForEquipment!" (save)="onSaveEquipment($event)"
+        (cancel)="closeModals()"></app-equipment-modal>
+</div>

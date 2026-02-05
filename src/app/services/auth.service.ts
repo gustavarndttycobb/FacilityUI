@@ -32,4 +32,20 @@ export class AuthService {
     signin(data: SigninRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/signin`, data);
     }
+
+    storeToken(token: string): void {
+        localStorage.setItem('auth_token', token);
+    }
+
+    getToken(): string | null {
+        return localStorage.getItem('auth_token');
+    }
+
+    logout(): void {
+        localStorage.removeItem('auth_token');
+    }
+
+    isAuthenticated(): boolean {
+        return !!this.getToken();
+    }
 }
