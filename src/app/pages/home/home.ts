@@ -4,6 +4,8 @@ import { Facility, FacilityService } from '../../services/facility.service';
 import { Equipment, EquipmentService } from '../../services/equipment.service';
 import { TreeNodeComponent } from '../../components/tree-node/tree-node.component';
 import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 import { FacilityModal } from '../../components/modals/facility-modal.component';
 import { EquipmentModal } from '../../components/modals/equipment-modal.component';
 
@@ -31,8 +33,16 @@ export class Home implements OnInit {
   constructor(
     private facilityService: FacilityService,
     private equipmentService: EquipmentService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authService: AuthService,
+    private router: Router
   ) { }
+
+  onLogout() {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
+    this.toastService.show('Logged out successfully', 'success');
+  }
 
   ngOnInit() {
     this.loadFacilities();

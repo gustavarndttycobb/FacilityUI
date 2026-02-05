@@ -1,7 +1,10 @@
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Facility Management</h1>
-        <button class="btn-primary" (click)="onAddFacility(null)">+ New Root Facility</button>
+        <div class="header-actions">
+            <button class="btn-primary" (click)="onAddFacility(null)">+ New Root Facility</button>
+            <button class="btn-secondary" (click)="onLogout()">Logout</button>
+        </div>
     </div>
 
     <div class="dashboard-content">
